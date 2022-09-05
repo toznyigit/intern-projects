@@ -1,0 +1,46 @@
+ns -a firewall;client1;client2;server
+lnk -a=3
+ns -c firewall
+fw
+exit
+lnk -ji firewall-veth0>192.0.2.1/26;veth2>192.0.2.65/26;veth4>192.0.2.129/26
+lnk -ji client1-veth1>192.0.2.2/26
+lnk -ji client2-veth3>192.0.2.66/26
+lnk -ji server-veth5>192.0.2.130/26
+ns -c client1
+gateway -D=veth1 -G=192.0.2.1
+exit
+ns -c client2
+gateway -D=veth3 -G=192.0.2.65
+exit
+ns -c server
+gateway -D=veth5 -G=192.0.2.129
+exit
+ns -c firewall
+X iptables -P INPUT DROP
+X iptables -P FORWARD DROP
+X iptables -P OUTPUT ACCEPT
+X iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+X iptables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+X iptables -A OUTPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+X iptables -A INPUT -m state --state NEW -s 192.0.2.66/32 -d 192.0.2.65/32 -p icmp -j ACCEPT
+X iptables -A FORWARD -m state --state NEW -s 192.0.2.66/32 -d 192.0.2.130/32 -p tcp -m tcp --dport 80 -j ACCEPT
+X iptables -A FORWARD -m state --state NEW -s 192.0.2.2/32 -d 192.0.2.130/32 -p icmp -j ACCEPT
+exit
+# in different terminal run: sudo ip netns exec server python3 -m http.server 80
+ns -c client1
+X ping 192.0.2.1
+X ping 192.0.2.65
+X ping 192.0.2.129
+X ping 192.0.2.66
+X ping 192.0.2.130
+X wget http://192.0.2.130:80
+exit
+ns -c client2
+X ping 192.0.2.1
+X ping 192.0.2.65
+X ping 192.0.2.129
+X ping 192.0.2.66
+X ping 192.0.2.130
+X wget http://192.0.2.130:80
+exit
