@@ -1,0 +1,24 @@
+{
+    "databases":[
+      {
+        "id": 0,
+        "dbname": "flask_db",
+        "host": "db_1",
+        "user": "flaskadmin",
+        "pass": "labris"
+      },{
+        "id": 1,
+        "dbname": "flask_db",
+        "host": "db_2",
+        "user": "flaskadmin",
+        "pass": "labris"
+      }],
+      "syncs" : [
+        {
+          "sources": [0,1],
+          "tables": "all",
+          "onetimecopy": 1
+        }
+      ]
+   }
+   

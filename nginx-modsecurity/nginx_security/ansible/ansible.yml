@@ -1,0 +1,37 @@
+---
+- name: Local connection
+  hosts: localhost
+  tasks:
+    - name: Check modsecurity.conf
+      stat:
+        path: /etc/nginx/modsec/modsecurity.conf
+      register: modsec_result
+
+    - name: Append custom rules to modsecurity.conf with args
+      when: modsec_result.stat.exists
+      lineinfile:
+        path: /etc/nginx/modsec/modsecurity.conf
+        line: SecRule ARGS:{{item.args}} "{{item.rule}}" "{{item.options}}"
+      loop:
+        - { args: "testparam", rule: "@contains test", options: "id:1234,deny,status:403,msg:'phoenixNAP test rule was triggered'"}
+        - { args: "remove", rule: "@rx .*", options: "id:1235,deny,status:403,msg:'phoenixNAP test rule was triggered'"}
+
+    # - name: Append custom rules to modsecurity.conf with vanilla
+    #   when: modsec_result.stat.exists
+    #   lineinfile:
+    #     path: /etc/nginx/modsec/modsecurity.conf
+    #     line: SecRule {{ item.line }}
+    #   loop:
+    #     - { line: 'REQUEST_BODY '}
+
+    - name: Check nginx is up
+      shell: "pgrep nginx"
+      ignore_errors: yes
+      register: nginx_result
+
+    - name: Stop nginx
+      shell: "kill $(pgrep nginx)"
+      when: nginx_result.stdout
+
+    - name: Start nginx
+      shell: "/usr/share/nginx/sbin/nginx"

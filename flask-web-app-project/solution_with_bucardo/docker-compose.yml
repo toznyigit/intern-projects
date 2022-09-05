@@ -1,0 +1,58 @@
+version: '3.3'
+
+services:
+  web_1:
+    build: ./server/
+    image: flask_app
+    ports:
+      - 5000:5000
+    environment:
+      - FLASK_PORT=5000
+      - DB_HOST=db_1
+    env_file:
+      - ./server/.env
+    depends_on:
+      - db_1
+  db_1:
+    image: garethflowers/postgres-plperl-server
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=flaskadmin
+      - POSTGRES_PASSWORD=labris
+      - POSTGRES_DB=flask_db
+
+  web_2:
+    build: ./server/
+    image: flask_app
+    ports:
+      - 5001:5001
+    environment:
+      - FLASK_PORT=5001
+      - DB_HOST=db_2
+    env_file:
+      - ./server/.env
+    depends_on:
+      - db_2
+  db_2:
+    image: garethflowers/postgres-plperl-server
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=flaskadmin
+      - POSTGRES_PASSWORD=labris
+      - POSTGRES_DB=flask_db
+
+  bucardo:
+    image: plgr/bucardo
+    restart: always
+    volumes:
+      - "./:/media/bucardo"
+    depends_on:
+      - db_1
+      - db_2
+
+volumes:
+  postgres_data:

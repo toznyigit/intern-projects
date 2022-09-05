@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="column is-4 is-offset-4">
+        {% if current_user.is_admin %}
+        <h3 class="title">Create User</h3>
+        {% else %}
+        <h3 class="title">Sign Up</h3>
+        {% endif %}
+        
+        <div class="box">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="notification is-danger">
+                    {{ messages[0] }}
+                </div>
+            {% endif %}
+            {% endwith %}
+            <form method="POST" action='{{ "/user/create" if current_user.is_admin else "/signup" }}'>
+                <div class="field">
+                    <div class="control">
+                        <input class="input is-large" type="text" name="username" placeholder="Username"  required>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <input class="input is-large" type="email" name="email" placeholder="Email"  required>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <input class="input is-large" type="text" name="firstname" placeholder="First Name"  required>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <input class="input is-large" type="text" name="middlename" placeholder="Middle Name" >
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <input class="input is-large" type="text" name="lastname" placeholder="Last Name"  required>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <input class="input is-large" type="date" name="birthdate"  required>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <input class="input is-large" type="password" name="password" placeholder="Password" id="password" required>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <input class="input is-large" type="password" name="repassword" placeholder="Re-Password" id="confirm_password" required>
+                    </div>
+                </div>
+                <span id='message'></span>
+                {% if current_user.is_admin %}
+                <button class="button is-block is-info is-large is-fullwidth" id="sumbit">Create User</button>
+                {% else %}
+                <button class="button is-block is-info is-large is-fullwidth" id="sumbit">Sign Up</button>
+                {% endif %}
+                
+            </form>
+        </div>
+    </div>
+
+    <script>
+        $('#password, #confirm_password').on('keyup', function () {
+            if ($('#password').val() == $('#confirm_password').val()) {
+                $('#message').html('Matching').css('color', 'green');
+            } 
+            else 
+                $('#message').html('Not Matching').css('color', 'red');
+        });
+    </script>
+{% endblock %}

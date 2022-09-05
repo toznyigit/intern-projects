@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <div class="container notification is-warning">
+            <div class="content has-text-centered">Registered Users
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th class="has-text-centered">Username</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="has-text-centered">
+                                <a href="/user/create">
+                                    <i class="fa fa-plus"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% for row in user_table %}
+                        <tr>
+                            <td class="has-text-centered">
+                                <a  href="/user/update/{{ row.username }}" style="height:100%;width:100%">
+                                    {{ row.username }}
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="container notification is-danger">
+            <div class="content has-text-centered">Online Users
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="has-text-centered">Username</th>
+                                <th class="has-text-centered">IP Address</th>
+                                <th class="has-text-centered">Login Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in online_table %}
+                            <tr>
+                                <td class="has-text-centered">{{ row.username }}</td>
+                                <td class="has-text-centered">{{ row.ipaddress }}</td>
+                                <td class="has-text-centered">{{ row.logindatetime }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>           
+        </div>
+    
+    </div>
+    <style>
+        .table-hover tbody tr:hover td {
+            background-color: #0000002a;
+        }
+    </style>
+{% endblock %}
